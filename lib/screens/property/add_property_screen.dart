@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../../data/yemen_data.dart';
 import '../../models/property_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/property_provider.dart';
@@ -31,6 +32,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   PropertyPurpose _purpose = PropertyPurpose.sale;
   PropertyCategory _category = PropertyCategory.apartment;
+  PropertyCurrency _currency = PropertyCurrency.yer;
+  String _governorate = yemenGovernorates.first;
   final List<XFile> _pickedImages = [];
 
   @override
@@ -105,16 +108,50 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     labelText: 'وصف العقار', alignLabelWithHint: true),
               ),
               const SizedBox(height: 14),
-              CustomTextField(
-                controller: _price,
-                label: 'السعر (ر.س)',
-                icon: Icons.attach_money,
-                keyboardType: TextInputType.number,
-                validator: _required,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: CustomTextField(
+                      controller: _price,
+                      label: 'السعر',
+                      icon: Icons.attach_money,
+                      keyboardType: TextInputType.number,
+                      validator: _required,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<PropertyCurrency>(
+                      value: _currency,
+                      isExpanded: true,
+                      items: PropertyCurrency.values
+                          .map((c) => DropdownMenuItem(value: c, child: Text(c.label)))
+                          .toList(),
+                      onChanged: (v) => setState(() => _currency = v!),
+                      decoration: const InputDecoration(labelText: 'العملة'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                value: _governorate,
+                isExpanded: true,
+                items: yemenGovernorates
+                    .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+                    .toList(),
+                onChanged: (v) => setState(() => _governorate = v!),
+                decoration: const InputDecoration(
+                  labelText: 'المحافظة',
+                  prefixIcon: Icon(Icons.map_outlined),
+                ),
               ),
               const SizedBox(height: 14),
               CustomTextField(
-                  controller: _location, label: 'الموقع / المدينة', icon: Icons.location_on_outlined,
+                  controller: _location, label: 'المديرية / الحي / الشارع', icon: Icons.location_on_outlined,
                   validator: _required),
               const SizedBox(height: 14),
               Row(
@@ -253,10 +290,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       title: _title.text.trim(),
       description: _description.text.trim(),
       price: double.tryParse(_price.text) ?? 0,
+      currency: _currency,
       purpose: _purpose,
       category: _category,
       images: images,
-      location: _location.text.trim(),
+      location: '$_governorate - ${_location.text.trim()}',
       area: double.tryParse(_area.text) ?? 0,
       rooms: int.tryParse(_rooms.text) ?? 0,
       bathrooms: int.tryParse(_bathrooms.text) ?? 0,

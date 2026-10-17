@@ -11,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
       name: 'مالك المنصة',
       email: 'owner@aqar.com',
       password: '123456',
-      phone: '+966500000000',
+      phone: '+967770000000',
       role: UserRole.owner,
     ),
   ];

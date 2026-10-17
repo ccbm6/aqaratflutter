@@ -156,7 +156,7 @@ class _PropertyCardState extends State<PropertyCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${_formatPrice(p.price)} ر.س${p.purpose == PropertyPurpose.rent ? " / شهرياً" : ""}',
+                        '${_formatPrice(p.price)} ${p.currency.symbol}${p.purpose == PropertyPurpose.rent ? " / شهرياً" : ""}',
                         style: const TextStyle(
                             color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14.5),
                       ),

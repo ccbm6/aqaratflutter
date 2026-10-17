@@ -117,7 +117,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    '${_formatPrice(p.price)} ر.س${p.purpose == PropertyPurpose.rent ? " / شهرياً" : ""}',
+                    '${_formatPrice(p.price)} ${p.currency.symbol}${p.purpose == PropertyPurpose.rent ? " / شهرياً" : ""}',
                     style: const TextStyle(
                         color: AppColors.primary, fontSize: 24, fontWeight: FontWeight.bold),
                   ),

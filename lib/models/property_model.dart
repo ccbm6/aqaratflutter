@@ -1,6 +1,33 @@
 enum PropertyPurpose { sale, rent }
 enum PropertyCategory { apartment, villa, land, office, shop, chalet }
 
+/// العملات المستخدمة في الإعلانات العقارية في اليمن
+enum PropertyCurrency { yer, usd, sar }
+
+extension PropertyCurrencyX on PropertyCurrency {
+  String get label {
+    switch (this) {
+      case PropertyCurrency.yer:
+        return 'ريال يمني';
+      case PropertyCurrency.usd:
+        return 'دولار أمريكي';
+      case PropertyCurrency.sar:
+        return 'ريال سعودي';
+    }
+  }
+
+  String get symbol {
+    switch (this) {
+      case PropertyCurrency.yer:
+        return 'ر.ي';
+      case PropertyCurrency.usd:
+        return '\$';
+      case PropertyCurrency.sar:
+        return 'ر.س';
+    }
+  }
+}
+
 extension PropertyPurposeX on PropertyPurpose {
   String get label => this == PropertyPurpose.sale ? 'للبيع' : 'للإيجار';
 }
@@ -46,6 +73,7 @@ class PropertyModel {
   String title;
   String description;
   double price;
+  PropertyCurrency currency;
   PropertyPurpose purpose;
   PropertyCategory category;
   List<String> images; // روابط أو مسارات صور محلية
@@ -65,6 +93,7 @@ class PropertyModel {
     required this.title,
     required this.description,
     required this.price,
+    this.currency = PropertyCurrency.yer,
     required this.purpose,
     required this.category,
     required this.images,
