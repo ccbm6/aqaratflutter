@@ -1,0 +1,56 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: بناء تطبيق أندرويد (APK)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: تنزيل الكود
+        uses: actions/checkout@v4
+
+      - name: تجهيز جافا
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: تثبيت Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: توليد ملفات أندرويد إن لم تكن موجودة
+        run: |
+          if [ ! -d android ]; then
+            flutter create . --platforms=android --project-name aqar_gateway --org com.aqar
+          fi
+
+      - name: إضافة صلاحية الإنترنت وفتح الروابط
+        run: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
+            sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' "$MANIFEST"
+          fi
+          if ! grep -q "<queries>" "$MANIFEST"; then
+            sed -i 's|<application|<queries>\n        <intent><action android:name="android.intent.action.VIEW"/><data android:scheme="https"/></intent>\n        <intent><action android:name="android.intent.action.VIEW"/><data android:scheme="tel"/></intent>\n    </queries>\n    <application|' "$MANIFEST"
+          fi
+
+      - name: تثبيت الحزم
+        run: flutter pub get
+
+      - name: بناء APK
+        run: flutter build apk --release
+
+      - name: رفع ملف APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: aqar-gateway-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
